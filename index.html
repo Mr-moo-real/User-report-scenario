@@ -106,7 +106,7 @@
         // Define conversation stages
         const stages = [
             {
-                prompt: 'I want to report this user who sent me a scammed link, their discord username is #######',
+                prompt: 'I want to report this user who sent me a scammed link, their discord username is (Username)',
                 responses: [
                     { text: 'Close the ticket', correct: false, incorrectFeedback: 'Not quite! This is the final step in completing a ticket.', nextStage: 1 },
                     { text: 'Moderate the user', correct: false, incorrectFeedback: 'If you have no evidence to back up what you are doing, you may be incorrectly moderating an innocent person!', nextStage: 1 },
