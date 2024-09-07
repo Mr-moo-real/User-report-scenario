@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Chat Window</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #e5e5e5;
+        }
+        .container {
+            width: 360px;
+            height: 500px; /* Adjust the height as needed */
+            display: flex;
+            flex-direction: column;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        .header {
+            background-color: #eb2e63; /* Uplift Games color */
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .chat-window {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            max-width: 80%;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 15px;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+        .message.from-me {
+            background: #eb2e63; /* Uplift Games color */
+            color: white;
+            align-self: flex-end;
+            margin-left: auto; /* Align to right */
+        }
+        .message.from-other {
+            background: #e5e5ea;
+            color: #000;
+            align-self: flex-start;
+            margin-right: auto; /* Align to left */
+        }
+        .message.incorrect {
+            border: 2px solid #eb2e63; /* Uplift Games color */
+            box-shadow: 0 0 10px rgba(235, 46, 99, 0.5);
+        }
+        .message.correct {
+            border: 2px solid #28a745; /* Green color */
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+        }
+        button {
+            padding: 10px;
+            border: none;
+            background-color: #eb2e63; /* Uplift Games color */
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #c81c54;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .additional-info {
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">User Report Scenario</div>
+        <div class="chat-window" id="chatWindow"></div>
+        <div class="button-container" id="buttonContainer">
+            <!-- Buttons will be dynamically added here -->
+        </div>
+    </div>
+    <script>
+        // Define conversation stages
+        const stages = [
+            {
+                prompt: 'I want to report this user who sent me a scammed link, their discord username is #######',
+                responses: [
+                    { text: 'Close the ticket', correct: false, incorrectFeedback: 'Not quite! This is the final step in completing a ticket.', nextStage: 1 },
+                    { text: 'Moderate the user', correct: false, incorrectFeedback: 'If you have no evidence to back up what you are doing, you may be incorrectly moderating an innocent person!', nextStage: 1 },
+                    { text: 'Claim the ticket', correct: true, feedback: 'Correct! When handling a ticket, claiming should always be the first action.', nextStage: 2 }
+                ]
+            },
+            {
+                prompt: 'Correct! When handling a ticket, claiming should always be the first action.',
+                responses: [
+                    { text: 'Look up the reported users username to check for infractions', correct: true, nextStage: 3 },
+                    { text: 'Escalate the ticket', correct: false, incorrectFeedback: 'There are no current reasons to escalate this ticket to an Admin+ at this stage.', nextStage: 2 },
+                    { text: 'Ask for a screenshot', correct: false, incorrectFeedback: 'You might not need a screenshot if you can find evidence yourself.', nextStage: 2 }
+                ]
+            },
+            {
+                prompt: 'Next step?',
+                responses: [
+                    { text: 'Escalate the ticket', correct: false, incorrectFeedback: 'There are no current reasons to escalate this ticket to an Admin+ at this stage.', nextStage: 4 },
+                    { text: 'Look up the reported users username to check for infractions', correct: true, feedback: 'Correct, in a lot of cases, you can find reported users breaking the rules in the server, where you can then moderate them without asking for evidence. (in this case, you found no evidence)', nextStage: 3 },
+                    { text: 'Ask for a screenshot', correct: false, incorrectFeedback: 'While asking for evidence is crucial, in some occasions you may be able to find evidence of the reported user breaking the rules within the server, in which case, a screenshot is not necessary.', nextStage: 4 }
+                ]
+            },
+            {
+                prompt: 'Next step?',
+                responses: [
+                    { text: 'Request evidence (Screenshot, etc.)', correct: true, feedback: 'Correct! If you cannot find any evidence yourself, you should turn to the user who created the ticket to provide evidence to back up their claims. (The user provides screenshots, however, they are cropped)', nextStage: 4 },
+                    { text: 'Insult the user who made the ticket', correct: false, incorrectFeedback: 'umm... no.', nextStage: 5 },
+                    { text: 'Ask for a user ID', correct: false, incorrectFeedback: 'While this is a good way to identify someone, in most cases you will be able to find and identify the user being reported by their username.', nextStage: 5 }
+                ]
+            },
+            {
+                prompt: 'Next step?',
+                responses: [
+                    { text: 'Ask for uncropped screenshots', correct: true, feedback: 'Correct! Asking for a full, uncropped screenshot will allow you to make sure they aren’t providing edited or out of context messages. This could be done through a personalised message or through the /tag full screen command (They send a screenshot of a PC Discord client)', nextStage: 5 },
+                    { text: 'Transfer the ticket to another moderator', correct: false, incorrectFeedback: 'This is a perfectly fine option! If you are feeling overwhelmed or are unsure what to do. You can ask for help or for someone else to take over your ticket in #ticket-discussion!', nextStage: 6 },
+                    { text: 'Moderate the user based off of the provided evidence', correct: false, incorrectFeedback: 'Cropped evidence can be easily taken out of context or can be easily edited. Evidence should always come in the form of an uncropped screenshot, otherwise it should not be accepted.', nextStage: 6 }
+                ]
+            },
+            {
+                prompt: 'Next step?',
+                responses: [
+                    { text: 'Close the ticket', correct: false, incorrectFeedback: 'You have not moderated the user yet! You should not close the ticket unless you have a good reason to.', nextStage: 7 },
+                    { text: 'Moderate the user based off of the evidence provided', correct: false, incorrectFeedback: 'Due to an increased amount of false reports, all PC screenshots should be escalated', nextStage: 7 },
+                    { text: 'Escalate ticket to Helen', correct: true, feedback: 'Correct! all PC screenshots should be escalated to Helen (@nursehyperion) due to an increase in false reports. This should be done following the guide in “Escalation” category (found on the home page of these ticket guides). This concludes this scenario, well done!!', nextStage: null }
+                ]
+            },
+            {
+                prompt: 'Upon reviewing, the evidence is confirmed solid. What is the final step?',
+                responses: [
+                    { text: 'Keep the ban in place and close the ticket', correct: true, nextStage: null },
+                    { text: 'Reduce the ban to a warning', correct: false, incorrectFeedback: 'The severity of the violation justifies a ban, reducing it is not appropriate.', nextStage: null },
+                    { text: 'Escalate to higher authorities for review', correct: false, incorrectFeedback: 'You have already reviewed the evidence, there is no need to escalate.', nextStage: null }
+                ]
+            }
+        ];
+
+        let currentStage = 0;
+        let previousMessageDivs = [];
+
+        function initChat() {
+            displayPrompt(stages[currentStage].prompt);
+        }
+
+        function displayPrompt(prompt) {
+            const chatWindow = document.getElementById('chatWindow');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message from-other';
+            messageDiv.innerText = prompt;
+            chatWindow.append(messageDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to the bottom
+            previousMessageDivs.push(messageDiv);
+            
+            // Wait for the prompt to fade in before enabling buttons
+            setTimeout(() => {
+                createButtons(stages[currentStage].responses);
+            }, 500); // Delay to match the animation duration
+        }
+
+        function createButtons(responses) {
+            const buttonContainer = document.getElementById('buttonContainer');
+            buttonContainer.innerHTML = ''; // Clear existing buttons
+            responses.forEach(response => {
+                const button = document.createElement('button');
+                button.innerText = response.text;
+                button.onclick = () => handleResponse(response);
+                buttonContainer.append(button);
+            });
+        }
+
+        function handleResponse(response) {
+            const chatWindow = document.getElementById('chatWindow');
+            
+            // Display the user's response with a fade-in effect
+            const userResponseDiv = document.createElement('div');
+            userResponseDiv.className = 'message from-me';
+            userResponseDiv.innerText = response.text;
+            chatWindow.append(userResponseDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to the bottom
+
+            // Remove previous incorrect messages
+            removeIncorrectMessages();
+
+            // Wait for a second before displaying the feedback
+            setTimeout(() => {
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.className = `message from-other ${response.correct ? 'correct' : 'incorrect'}`;
+                feedbackDiv.innerHTML = response.correct ? 
+                    response.feedback : 
+                    response.incorrectFeedback;
+                chatWindow.append(feedbackDiv);
+                chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to the bottom
+
+                // If the response is correct, proceed to the next stage
+                if (response.correct) {
+                    if (response.nextStage !== null) {
+                        currentStage = response.nextStage;
+                        setTimeout(() => {
+                            // Clear the previous responses and show new buttons after feedback
+                            removeIncorrectMessages();
+                            displayPrompt(stages[currentStage].prompt);
+                        }, 1000); // Delay to match feedback display
+                    } else {
+                        // End of conversation or no next stage
+                        document.getElementById('buttonContainer').innerHTML = '';
+                    }
+                }
+            }, 1000); // 1 second delay before showing the response
+        }
+
+        function removeIncorrectMessages() {
+            // Remove previous incorrect messages
+            previousMessageDivs.forEach(div => {
+                if (div.classList.contains('incorrect')) {
+                    div.remove();
+                }
+            });
+            // Clear the list of previous messages
+            previousMessageDivs = [];
+        }
+
+        // Initialize chat on page load
+        window.onload = initChat;
+    </script>
+</body>
+</html>
