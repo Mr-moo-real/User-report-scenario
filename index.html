@@ -122,39 +122,39 @@
                 ]
             },
             {
-                prompt: 'Next step?',
+                prompt: 'You claim the ticket using the provided button within the ticket.',
                 responses: [
                     { text: 'Escalate the ticket', correct: false, incorrectFeedback: 'There are no current reasons to escalate this ticket to an Admin+ at this stage.', nextStage: 4 },
-                    { text: 'Look up the reported users username to check for infractions', correct: true, feedback: 'Correct, in a lot of cases, you can find reported users breaking the rules in the server, where you can then moderate them without asking for evidence. (in this case, you found no evidence)', nextStage: 3 },
+                    { text: 'Look up the reported users username to check for infractions', correct: true, feedback: 'Correct, in a lot of cases, you can find reported users breaking the rules in the server, where you can then moderate them without asking for evidence.', nextStage: 3 },
                     { text: 'Ask for a screenshot', correct: false, incorrectFeedback: 'While asking for evidence is crucial, in some occasions you may be able to find evidence of the reported user breaking the rules within the server, in which case, a screenshot is not necessary.', nextStage: 4 }
                 ]
             },
             {
-                prompt: 'Next step?',
+                prompt: 'You search for messages, deleted messages and moderation logs for the user. In this case, you find nothing to support what the user is claiming.',
                 responses: [
-                    { text: 'Request evidence (Screenshot, etc.)', correct: true, feedback: 'Correct! If you cannot find any evidence yourself, you should turn to the user who created the ticket to provide evidence to back up their claims. (The user provides screenshots, however, they are cropped)', nextStage: 4 },
+                    { text: 'Request evidence (Screenshot, etc.)', correct: true, feedback: 'Correct! If you cannot find any evidence yourself, you should turn to the user who created the ticket to provide evidence to back up their claims.', nextStage: 4 },
                     { text: 'Insult the user who made the ticket', correct: false, incorrectFeedback: 'umm... no.', nextStage: 5 },
                     { text: 'Ask for a user ID', correct: false, incorrectFeedback: 'While this is a good way to identify someone, in most cases you will be able to find and identify the user being reported by their username.', nextStage: 5 }
                 ]
             },
             {
-                prompt: 'Next step?',
+                prompt: 'You request evidence from the user in the form of a screenshot. The user send you a screenshot, however it is cropped.',
                 responses: [
-                    { text: 'Ask for uncropped screenshots', correct: true, feedback: 'Correct! Asking for a full, uncropped screenshot will allow you to make sure they aren’t providing edited or out of context messages. This could be done through a personalised message or through the /tag full screen command (They send a screenshot of a PC Discord client)', nextStage: 5 },
+                    { text: 'request for an uncropped screenshot', correct: true, feedback: 'Correct! Asking for a full, uncropped screenshot will allow you to make sure they aren’t providing edited or out of context messages. This could be done through a personalised message or through the /tag full screen command', nextStage: 5 },
                     { text: 'Transfer the ticket to another moderator', correct: false, incorrectFeedback: 'This is a perfectly fine option! If you are feeling overwhelmed or are unsure what to do. You can ask for help or for someone else to take over your ticket in #ticket-discussion!', nextStage: 6 },
                     { text: 'Moderate the user based off of the provided evidence', correct: false, incorrectFeedback: 'Cropped evidence can be easily taken out of context or can be easily edited. Evidence should always come in the form of an uncropped screenshot, otherwise it should not be accepted.', nextStage: 6 }
                 ]
             },
             {
-                prompt: 'Next step?',
+                prompt: 'The user sends through an uncropped screenshot with no notable discrepancies.',
                 responses: [
                     { text: 'Close the ticket', correct: false, incorrectFeedback: 'You have not moderated the user yet! You should not close the ticket unless you have a good reason to.', nextStage: 7 },
                     { text: 'Moderate the user based off of the evidence provided', correct: false, incorrectFeedback: 'Due to an increased amount of false reports, all PC screenshots should be escalated', nextStage: 7 },
-                    { text: 'Escalate ticket to Helen', correct: true, feedback: 'Correct! all PC screenshots should be escalated to Helen (@nursehyperion) due to an increase in false reports. This should be done following the guide in “Escalation” category (found on the home page of these ticket guides). This concludes this scenario, well done!!', nextStage: null }
+                    { text: 'Escalate ticket to Helen', correct: true, feedback: 'Correct! all PC screenshots should be escalated to Helen (@nursehyperion) due to an increase in false reports. This should be done following the guide in “Escalation” category (found on the home page of these ticket guides). This concludes this scenario, well done!', nextStage: null }
                 ]
             },
             {
-                prompt: 'Upon reviewing, the evidence is confirmed solid. What is the final step?',
+                prompt: 'Ignore',
                 responses: [
                     { text: 'Keep the ban in place and close the ticket', correct: true, nextStage: null },
                     { text: 'Reduce the ban to a warning', correct: false, incorrectFeedback: 'The severity of the violation justifies a ban, reducing it is not appropriate.', nextStage: null },
