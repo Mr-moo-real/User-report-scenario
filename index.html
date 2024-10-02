@@ -182,7 +182,7 @@
             // Wait for the prompt to fade in before enabling buttons
             setTimeout(() => {
                 createButtons(stages[currentStage].responses);
-            }, 500); // Delay to match the animation duration
+            }, 0); // Delay to match the animation duration
         }
 
         function createButtons(responses) {
@@ -227,13 +227,13 @@
                             // Clear the previous responses and show new buttons after feedback
                             removeIncorrectMessages();
                             displayPrompt(stages[currentStage].prompt);
-                        }, 1000); // Delay to match feedback display
+                        }, 500); // Delay to match feedback display
                     } else {
                         // End of conversation or no next stage
                         document.getElementById('buttonContainer').innerHTML = '';
                     }
                 }
-            }, 1000); // 1 second delay before showing the response
+            }, 500); // delay before showing the response
         }
 
         function removeIncorrectMessages() {
